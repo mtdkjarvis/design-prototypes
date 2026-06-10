@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EverAfter — Wedding Budget Suite</title>
+<style>
+:root{
+  --dusty-rose:#d4a5a5;
+  --clay:#b87d6d;
+  --sand:#e8d5c4;
+  --burgundy:#5d2e46;
+  --cream:#faf6f1;
+  --white:#ffffff;
+  --shadow:rgba(93,46,70,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body{
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--burgundy);
+  min-height:100vh;
+}
+header{
+  background: var(--white);
+  border-bottom: 1px solid var(--sand);
+  padding: 1.2rem 2rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.logo{ font-size:1.5rem; font-weight:700; letter-spacing:-0.5px; }
+.logo span{ color: var(--clay); }
+nav{ display:flex; gap:2rem; }
+nav a{
+  text-decoration:none;
+  color: var(--burgundy);
+  font-size:0.9rem;
+  font-weight:500;
+  opacity:0.7;
+  transition:0.2s;
+  cursor:pointer;
+}
+nav a:hover, nav a.active{ opacity:1; }
+.user{ display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; }
+.avatar{
+  width:34px; height:34px; border-radius:50%;
+  background: var(--dusty-rose);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:600; color: var(--white);
+}
+
+.container{ max-width:1200px; margin:0 auto; padding:2rem; }
+
+.hero{
+  background: var(--white);
+  border-radius:20px;
+  padding:2.5rem;
+  margin-bottom:2rem;
+  box-shadow:0 4px 20px var(--shadow);
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:3rem;
+  align-items:center;
+}
+.hero-text h1{
+  font-size:2.4rem;
+  font-weight:700;
+  margin-bottom:0.6rem;
+  line-height:1.2;
+}
+.hero-text p{ color: var(--clay); font-size:1.05rem; margin-bottom:1.5rem; }
+.countdown{
+  display:flex;
+  gap:1.5rem;
+}
+.countdown-item{
+  text-align:center;
+}
+.countdown-item .number{
+  font-size:2rem; font-weight:700; color: var(--burgundy);
+}
+.countdown-item .label{
+  font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; opacity:0.6;
+}
+
+.ring-visual{
+  display:flex; justify-content:center; align-items:center;
+  position:relative; height:200px;
+}
+.ring{
+  width:180px; height:180px;
+  border-radius:50%;
+  border: 12px solid var(--dusty-rose);
+  border-top-color: var(--clay);
+  transform: rotate(-45deg);
+  position:relative;
+}
+.ring::after{
+  content:'';
+  position:absolute;
+  inset: -24px;
+  border-radius:50%;
+  border: 2px solid var(--sand);
+}
+.ring-center{
+  position:absolute;
+  text-align:center;
+}
+.ring-center .spent{ font-size:1.8rem; font-weight:700; }
+.ring-center .total{ font-size:0.85rem; opacity:0.6; margin-top:2px; }
+
+.stats-grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:1.2rem;
+  margin-bottom:2rem;
+}
+.stat-card{
+  background: var(--white);
+  border-radius:16px;
+  padding:1.5rem;
+  box-shadow:0 2px 12px var(--shadow);
+  transition: transform 0.2s;
+}
+.stat-card:hover{ transform: translateY(-2px); }
+.stat-card .label{
+  font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;
+  opacity:0.6; margin-bottom:0.5rem;
+}
+.stat-card .value{
+  font-size:1.6rem; font-weight:700;
+}
+.stat-card .sub{
+  font-size:0.8rem; opacity:0.5; margin-top:0.3rem;
+}
+
+.section-title{
+  font-size:1.2rem; font-weight:600;
+  margin-bottom:1rem;
+  display:flex; align-items:center; gap:0.6rem;
+}
+.section-title::before{
+  content:''; width:4px; height:20px; background: var(--clay); border-radius:2px;
+}
+
+.grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; }
+
+.card{
+  background: var(--white);
+  border-radius:16px;
+  padding:1.5rem;
+  box-shadow:0 2px 12px var(--shadow);
+}
+
+.budget-category{
+  display:flex; align-items:center;
+  gap:1rem;
+  padding:1rem 0;
+  border-bottom:1px solid var(--sand);
+}
+.budget-category:last-child{ border-bottom:none; }
+.category-icon{
+  width:40px; height:40px; border-radius:10px;
+  background: var(--sand);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.2rem;
+}
+.category-info{ flex:1; }
+.category-info .name{ font-weight:600; font-size:0.95rem; }
+.category-info .detail{ font-size:0.8rem; opacity:0.5; margin-top:2px; }
+.category-bar{
+  width:100px; height:6px; background: var(--sand); border-radius:3px; overflow:hidden;
+}
+.category-bar .fill{ height:100%; border-radius:3px; background: var(--clay); }
+.category-amount{ text-align:right; }
+.category-amount .spent{ font-weight:700; font-size:0.95rem; }
+.category-amount .budget{ font-size:0.75rem; opacity:0.5; }
+
+.vendor-card{
+  display:flex; gap:1rem;
+  padding:1rem;
+  border-radius:12px;
+  background: var(--cream);
+  margin-bottom:0.8rem;
+  transition:0.2s;
+}
+.vendor-card:hover{ background: var(--sand); }
+.vendor-img{
+  width:60px; height:60px; border-radius:10px;
+  background: var(--dusty-rose);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.5rem;
+}
+.vendor-info{ flex:1; }
+.vendor-info .name{ font-weight:600; }
+.vendor-info .type{ font-size:0.8rem; opacity:0.5; }
+.vendor-status{
+  padding:0.3rem 0.8rem;
+  border-radius:20px;
+  font-size:0.75rem; font-weight:600;
+}
+.status-booked{ background:#d4edda; color:#155724; }
+.status-pending{ background:#fff3cd; color:#856404; }
+.status-quoted{ background:#d1ecf1; color:#0c5460; }
+
+.timeline{
+  position:relative;
+  padding-left:2rem;
+}
+.timeline::before{
+  content:''; position:absolute; left:7px; top:0; bottom:0;
+  width:2px; background: var(--sand);
+}
+.timeline-item{
+  position:relative;
+  padding-bottom:1.5rem;
+}
+.timeline-item::before{
+  content:''; position:absolute; left:-1.85rem; top:2px;
+  width:16px; height:16px; border-radius:50%;
+  background: var(--white);
+  border:3px solid var(--clay);
+}
+.timeline-item.done::before{ background: var(--clay); }
+.timeline-item .date{ font-size:0.8rem; opacity:0.5; margin-bottom:0.2rem; }
+.timeline-item .event{ font-weight:600; }
+.timeline-item .note{ font-size:0.85rem; opacity:0.6; margin-top:0.2rem; }
+
+.tab-content{ display:none; }
+.tab-content.active{ display:block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn{ from{ opacity:0; transform: translateY(10px);} to{ opacity:1; transform:none;} }
+
+.btn{
+  padding:0.6rem 1.2rem;
+  border-radius:10px;
+  border:none;
+  font-weight:600;
+  cursor:pointer;
+  font-size:0.85rem;
+  transition:0.2s;
+}
+.btn-primary{ background: var(--burgundy); color: var(--white); }
+.btn-primary:hover{ background: var(--clay); }
+.btn-secondary{ background: var(--sand); color: var(--burgundy); }
+
+.guest-table{ width:100%; border-collapse:collapse; }
+.guest-table th{ text-align:left; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; opacity:0.6; padding:0.8rem; border-bottom:2px solid var(--sand); }
+.guest-table td{ padding:0.8rem; border-bottom:1px solid var(--sand); font-size:0.9rem; }
+.guest-table tr:hover{ background: var(--cream); }
+.tag{ padding:0.2rem 0.6rem; border-radius:12px; font-size:0.75rem; font-weight:600; }
+.tag-family{ background: var(--dusty-rose); color: var(--white); }
+.tag-friend{ background: var(--sand); color: var(--burgundy); }
+.tag-vip{ background: var(--burgundy); color: var(--white); }
+
+footer{
+  text-align:center; padding:2rem; font-size:0.8rem; opacity:0.4; margin-top:2rem;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Ever<span>After</span></div>
+  <nav>
+    <a class="active" onclick="switchTab('dashboard')">Dashboard</a>
+    <a onclick="switchTab('budget')">Budget</a>
+    <a onclick="switchTab('vendors')">Vendors</a>
+    <a onclick="switchTab('guests')">Guests</a>
+    <a onclick="switchTab('timeline')">Timeline</a>
+  </nav>
+  <div class="user">
+    <span>Sarah & James</span>
+    <div class="avatar">SJ</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="tab-content active">
+    <div class="hero">
+      <div class="hero-text">
+        <h1>Sarah & James<br>June 14, 2026</h1>
+        <p>Grandview Estate, Napa Valley</p>
+        <div class="countdown">
+          <div class="countdown-item"><div class="number" id="cd-days">4</div><div class="label">Days</div></div>
+          <div class="countdown-item"><div class="number">12</div><div class="label">Hours</div></div>
+          <div class="countdown-item"><div class="number">36</div><div class="label">Minutes</div></div>
+        </div>
+      </div>
+      <div class="ring-visual">
+        <div class="ring"></div>
+        <div class="ring-center">
+          <div class="spent">$42,350</div>
+          <div class="total">of $50,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Total Budget</div>
+        <div class="value">$50,000</div>
+        <div class="sub">Original estimate</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Committed</div>
+        <div class="value">$42,350</div>
+        <div class="sub">84.7% allocated</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Paid</div>
+        <div class="value">$28,100</div>
+        <div class="sub">56.2% of budget</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Remaining</div>
+        <div class="value">$7,650</div>
+        <div class="sub">Available to spend</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-title">Upcoming Payments</div>
+        <div class="budget-category">
+          <div class="category-icon">📸</div>
+          <div class="category-info">
+            <div class="name">Photography</div>
+            <div class="detail">Due in 2 days</div>
+          </div>
+          <div class="category-amount">
+            <div class="spent">$3,200</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">🌸</div>
+          <div class="category-info">
+            <div class="name">Florist</div>
+            <div class="detail">Due in 5 days</div>
+          </div>
+          <div class="category-amount">
+            <div class="spent">$2,800</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">🚗</div>
+          <div class="category-info">
+            <div class="name">Transportation</div>
+            <div class="detail">Due in 8 days</div>
+          </div>
+          <div class="category-amount">
+            <div class="spent">$1,200</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Recent Activity</div>
+        <div class="timeline" style="padding-left:1.5rem;">
+          <div class="timeline-item done">
+            <div class="date">Today, 9:30 AM</div>
+            <div class="event">Final guest count confirmed</div>
+            <div class="note">142 attending (was 150)</div>
+          </div>
+          <div class="timeline-item done">
+            <div class="date">Yesterday</div>
+            <div class="event">Seating chart finalized</div>
+            <div class="note">Saved $400 by reducing table count</div>
+          </div>
+          <div class="timeline-item">
+            <div class="date">Jun 8</div>
+            <div class="event">Catering headcount due</div>
+            <div class="note">Pending — waiting on 3 RSVPs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUDGET -->
+  <div id="budget" class="tab-content">
+    <div class="hero" style="grid-template-columns:1fr;">
+      <div>
+        <div class="section-title" style="margin-bottom:1.5rem;">Budget Breakdown</div>
+        <div class="budget-category">
+          <div class="category-icon">🏛️</div>
+          <div class="category-info">
+            <div class="name">Venue & Rentals</div>
+            <div class="detail">Grandview Estate, chairs, tables, linens</div>
+          </div>
+          <div class="category-bar"><div class="fill" style="width:100%"></div></div>
+          <div class="category-amount">
+            <div class="spent">$15,000</div>
+            <div class="budget">of $15,000</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">🍽️</div>
+          <div class="category-info">
+            <div class="name">Catering & Bar</div>
+            <div class="detail">$105 per person × 142 guests</div>
+          </div>
+          <div class="category-bar"><div class="fill" style="width:95%"></div></div>
+          <div class="category-amount">
+            <div class="spent">$14,910</div>
+            <div class="budget">of $15,000</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">📸</div>
+          <div class="category-info">
+            <div class="name">Photography & Video</div>
+            <div class="detail">8 hours coverage, 2 shooters</div>
+          </div>
+          <div class="category-bar"><div class="fill" style="width:80%"></div></div>
+          <div class="category-amount">
+            <div class="spent">$4,800</div>
+            <div class="budget">of $6,000</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">🌸</div>
+          <div class="category-info">
+            <div class="name">Florist & Decor</div>
+            <div class="detail">Bouquets, centerpieces, arch</div>
+          </div>
+          <div class="category-bar"><div class="fill" style="width:75%"></div></div>
+          <div class="category-amount">
+            <div class="spent">$3,000</div>
+            <div class="budget">of $4,000</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">🎵</div>
+          <div class="category-info">
+            <div class="name">Music & Entertainment</div>
+            <div class="detail">DJ + live ceremony quartet</div>
+          </div>
+          <div class="category-bar"><div class="fill" style="width:60%"></div></div>
+          <div class="category-amount">
+            <div class="spent">$1,800</div>
+            <div class="budget">of $3,000</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">👗</div>
+          <div class="category-info">
+            <div class="name">Attire & Beauty</div>
+            <div class="detail">Dress, suit, alterations, hair & makeup</div>
+          </div>
+          <div class="category-bar"><div class="fill" style="width:90%"></div></div>
+          <div class="category-amount">
+            <div class="spent">$2,700</div>
+            <div class="budget">of $3,000</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">✉️</div>
+          <div class="category-info">
+            <div class="name">Stationery & Gifts</div>
+            <div class="detail">Invites, programs, favors</div>
+          </div>
+          <div class="category-bar"><div class="fill" style="width:50%"></div></div>
+          <div class="category-amount">
+            <div class="spent">$650</div>
+            <div class="budget">of $1,300</div>
+          </div>
+        </div>
+        <div class="budget-category">
+          <div class="category-icon">📋</div>
+          <div class="category-info">
+            <div class="name">Miscellaneous</div>
+            <div class="detail">Tips, emergency fund, marriage license</div>
+          </div>
+          <div class="category-bar"><div class="fill" style="width:30%"></div></div>
+          <div class="category-amount">
+            <div class="spent">$490</div>
+            <div class="budget">of $1,700</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VENDORS -->
+  <div id="vendors" class="tab-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <div class="section-title" style="margin:0;">Vendor Tracker</div>
+      <button class="btn btn-primary">+ Add Vendor</button>
+    </div>
+    <div class="grid-2">
+      <div class="vendor-card">
+        <div class="vendor-img">🏛️</div>
+        <div class="vendor-info">
+          <div class="name">Grandview Estate</div>
+          <div class="type">Venue</div>
+        </div>
+        <div class="vendor-status status-booked">Booked</div>
+      </div>
+      <div class="vendor-card">
+        <div class="vendor-img">📸</div>
+        <div class="vendor-info">
+          <div class="name">Lumiere Photography</div>
+          <div class="type">Photography</div>
+        </div>
+        <div class="vendor-status status-booked">Booked</div>
+      </div>
+      <div class="vendor-card">
+        <div class="vendor-img">🍽️</div>
+        <div class="vendor-info">
+          <div class="name">Harvest Table Catering</div>
+          <div class="type">Catering</div>
+        </div>
+        <div class="vendor-status status-booked">Booked</div>
+      </div>
+      <div class="vendor-card">
+        <div class="vendor-img">🌸</div>
+        <div class="vendor-info">
+          <div class="name">Petal & Stem</div>
+          <div class="type">Florist</div>
+        </div>
+        <div class="vendor-status status-pending">Pending</div>
+      </div>
+      <div class="vendor-card">
+        <div class="vendor-img">🎵</div>
+        <div class="vendor-info">
+          <div class="name">Soundwave DJs</div>
+          <div class="type">Entertainment</div>
+        </div>
+        <div class="vendor-status status-quoted">Quoted</div>
+      </div>
+      <div class="vendor-card">
+        <div class="vendor-img">🚗</div>
+        <div class="vendor-info">
+          <div class="name">Napa Classic Cars</div>
+          <div class="type">Transportation</div>
+        </div>
+        <div class="vendor-status status-quoted">Quoted</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUESTS -->
+  <div id="guests" class="tab-content">
+    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="stat-card">
+        <div class="label">Invited</div>
+        <div class="value">200</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Attending</div>
+        <div class="value">142</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Cost Per Head</div>
+        <div class="value">$148</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:1.5rem;">
+      <table class="guest-table">
+        <tr><th>Name</th><th>Group</th><th>Status</th><th>Dietary</th></tr>
+        <tr><td>Eleanor & Robert Whitfield</td><td><span class="tag tag-family">Family</span></td><td>Attending</td><td>None</td></tr>
+        <tr><td>Marcus Chen</td><td><span class="tag tag-friend">Friend</span></td><td>Attending</td><td>Vegetarian</td></tr>
+        <tr><td>Alexandra Ross</td><td><span class="tag tag-friend">Friend</span></td><td>Attending</td><td>None</td></tr>
+        <tr><td>David & Susan Park</td><td><span class="tag tag-family">Family</span></td><td>Attending</td><td>Gluten-free</td></tr>
+        <tr><td>Jennifer Blake</td><td><span class="tag tag-vip">VIP</span></td><td>Attending</td><td>Vegan</td></tr>
+        <tr><td>Thomas & Marie Laurent</td><td><span class="tag tag-family">Family</span></td><td>Declined</td><td>—</td></tr>
+        <tr><td>Jordan Smith</td><td><span class="tag tag-friend">Friend</span></td><td>Pending</td><td>—</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div id="timeline" class="tab-content">
+    <div class="card">
+      <div class="section-title">Wedding Day Timeline</div>
+      <div class="timeline">
+        <div class="timeline-item done">
+          <div class="date">8:00 AM</div>
+          <div class="event">Hair & Makeup</div>
+          <div class="note">Bridal suite — 4 artists on site</div>
+        </div>
+        <div class="timeline-item">
+          <div class="date">11:00 AM</div>
+          <div class="event">Photographer Arrives</div>
+          <div class="note">Detail shots, getting-ready candids</div>
+        </div>
+        <div class="timeline-item">
+          <div class="date">1:00 PM</div>
+          <div class="event">First Look</div>
+          <div class="note">Garden terrace — private moment</div>
+        </div>
+        <div class="timeline-item">
+          <div class="date">2:30 PM</div>
+          <div class="event">Ceremony</div>
+          <div class="note">Grandview lawn — 30 minutes</div>
+        </div>
+        <div class="timeline-item">
+          <div class="date">3:00 PM</div>
+          <div class="event">Cocktail Hour</div>
+          <div class="note">Terrace & garden — passed hors d'oeuvres</div>
+        </div>
+        <div class="timeline-item">
+          <div class="date">4:30 PM</div>
+          <div class="event">Reception</div>
+          <div class="note">Grand ballroom — dinner, speeches, dancing</div>
+        </div>
+        <div class="timeline-item">
+          <div class="date">10:00 PM</div>
+          <div class="event">Sparkler Send-off</div>
+          <div class="note">Front circle drive</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>EverAfter — Wedding Budget Suite · Proof of Concept</footer>
+
+<script>
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  document.querySelectorAll('nav a').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+}
+// simple countdown
+function updateCountdown(){
+  const wedding = new Date('2026-06-14T14:30:00');
+  const now = new Date();
+  const diff = wedding - now;
+  const days = Math.floor(diff / (1000*60*60*24));
+  document.getElementById('cd-days').textContent = days > 0 ? days : 0;
+}
+updateCountdown();
+</script>
+</body>
+</html>
